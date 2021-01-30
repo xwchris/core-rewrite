@@ -1,5 +1,5 @@
 const { expect, test } = require('@jest/globals');
-const CorePromise = require('./index').CorePromise;
+const CorePromise = require('./promise-core').CorePromise;
 
 test('直接resolve Promise应该正确返回结果', () => {
     return new CorePromise((resolve) => {

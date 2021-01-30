@@ -1,58 +1,8 @@
-# Promise-core
-首先我们定义一个函数
-```js
-function CorePromise(handler) {
-    // write code here
- }
-```
-```js
+/**
+ * 一个简单的Promise的实现
+ */
+
  function CorePromise(handler) {
-    // 三种状态pending, rejected, fulfilled
-    this.status = 'pending';
-
-    function resolve() {
-
-    }
-
-    function reject() {
-
-    }
-
-    handler(resolve, reject);
- }
-```
-
-```js
- function CorePromise(handler) {
-    // 三种状态pending, rejected, fulfilled
-    this.status = 'pending';
-    this.value = null;
-    this.err = null;
-
-   const resolve = (value) => {
-        if (this.status === 'pending') {
-            setTimeout(() => {
-                this.status = 'fulfilled';
-                this.value = value;
-            })
-        }
-    }
-
-    const reject = (err) => {
-        if (this.status === 'pending') {
-            setTimeout(() => {
-                this.status = 'rejected';
-                this.err = err;
-            })
-        }
-    }
-
-    handler(resolve, reject);
- }
-```
-
-```js
-function CorePromise(handler) {
     // 三种状态pending, rejected, fulfilled
     this.status = 'pending';
     this.value = null;
@@ -86,23 +36,8 @@ function CorePromise(handler) {
         reject(err)
     }
  }
-```
-```js
-CorePromise.prototype.then = function(resolveCb, rejectCb) {
-    let promise = null;
-    resolveCb = typeof resolveCb === 'function' ? resolveCb : (value) => value;
-    rejectCb = typeof rejectCb === 'function' ? rejectCb : (err) => { throw err };
 
-    promise = new CorePromise((resolve, reject) => {
-
-    });
-    
-    return promise
-}
-```
-
-```js
-CorePromise.prototype.then = function (onFulfilled, onRejected) {CorePromise.prototype.then = function (onFulfilled, onRejected) {
+CorePromise.prototype.then = function (onFulfilled, onRejected) {
     let promise = null;
     onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : (value) => value;
     onRejected = typeof onRejected === 'function' ? onRejected : (err) => { throw err };
@@ -142,4 +77,53 @@ CorePromise.prototype.then = function (onFulfilled, onRejected) {CorePromise.pro
     
     return promise
 }
-```
+
+CorePromise.prototype.catch = function (onRejected) {
+    return this.then(null, onRejected)
+}
+
+CorePromise.resolve = (value) => {
+    return new CorePromise((resolve) => {
+        resolve(value)
+    })
+}
+CorePromise.reject = (error) => {
+    return new CorePromise((resolve, reject) => {
+        reject(error)
+    })
+}
+CorePromise.all = (promises) => {
+    const result = []
+    const length = promises.length;
+    let total = 0;
+    return new CorePromise((resolve, reject) => {
+        for (let i = 0; i < length; i++) {
+            const promise = promises[i];
+            promise.then(res => {
+                result[i] = res;
+                total++;
+
+                if (total === length) {
+                    resolve(result);
+                }
+            }, (err) => {
+                reject(err);
+            })
+        }
+    })
+}
+CorePromise.race = (promises) => {
+    let isHandled = false
+    return new CorePromise((resolve, reject) => {
+        for (let i = 0; i < promises.length; i++) {
+            promises[i].then((res) => {
+                if (!isHandled) {
+                    isHandled = true;
+                    resolve(res)
+                }
+            }, reject)
+        }
+    })
+}
+
+module.exports.CorePromise = CorePromise
