@@ -1,15 +1,19 @@
-# 实现Promise核心来更轻松的使用它
-这是该代码实现系列的第一期 - Promise核心实现，更多问题欢迎多多在[Promise核心实现讨论区](https://github.com/xwchris/core-rewrite/issues/1)进行讨论
+# Promise核心实现
+这是该代码实现系列的第一期 - [Promise核心实现](https://github.com/xwchris/core-rewrite/tree/main/packages/promise-core)
+
+更多问题欢迎多多在[Promise核心实现讨论区](https://github.com/xwchris/core-rewrite/issues/1)进行讨论
 
 ## 前提准备
-这一次我们是要实现简单的`Promise`，帮助我们进行更加深入的了解`Promise`。
-前提需要你理解什么是`Promise`以及`Promise`常用的用法，如果你不了解`Promise`可以点击[这里](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Using_promises)进行了解
+这一次我们是要实现的是`Promise`，帮助我们进行更加深入的了解`Promise`。
+
+在这之前需要你理解什么是`Promise`以及`Promise`常用的用法，如果你不了解`Promise`可以点击[这里](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Using_promises)进行了解
 
 ## 写前思考
 在实现之前我们要先思考下实现Promise包括哪些点，比如
-- Promise是一个异步结果
+- Promise代表异步结果
 - Promise有三种状态，状态只能从`pending`到`fulfilled`或者`pending`到`rejected`
 - Promise可以链式调用
+
 到这里想到这三个点，我们就可以开始动手实现了，让我们一步步来看
 
 ## 代码实现
@@ -20,7 +24,9 @@ function CorePromise(handler) {
     // write code here
  }
 ```
-首先我们定义Promise的状态，Promsie初始状态是`pending`。同时我们知道Promise构造函数接受一个参数，该参数是一个函数，它会接受`resolve`和`reject`两个参数，方便我们进行调用，按这种逻辑我们实现成下面的样子
+首先我们定义Promise的状态，Promsie初始状态是`pending`。
+
+同时我们知道Promise构造函数接受一个参数，该参数是一个函数，它会接受`resolve`和`reject`两个参数，方便我们进行调用，按这种逻辑我们实现成下面的样子
 ```js
  function CorePromise(handler) {
     // 三种状态pending, rejected, fulfilled
@@ -38,7 +44,11 @@ function CorePromise(handler) {
  }
 ```
 
-当调用`resolve`或`reject`的时候会发生什么那？promise的状态会变化，我们在我们之前的基础上实现`resolve`和`reject`函数，他们只会在`pending`状态会执行，同时由于是异步我们这里使用`setTimeout`进行包裹。调用后我们记录成功后的值或者失败的原因。
+当调用`resolve`或`reject`的时候会发生什么那？promise的状态会发生变化，我们在之前的基础上实现`resolve`和`reject`函数，他们只会在`pending`状态会执行
+
+同时由于是`Promise`需要异步执行，所以我们这里使用`setTimeout`进行包裹。
+
+调用后我们记录成功后的结果和失败的原因。
 ```js
  function CorePromise(handler) {
     // 三种状态pending, rejected, fulfilled
@@ -68,9 +78,11 @@ function CorePromise(handler) {
  }
 ```
 
-调用`resolve`或`reject`后除了状态变化，我们还会继续执行到then，并调用`then`里面定义的回调函数，将结果或失败原因传递给回调函数。我们定义两个数组来挂载回调函数，并在执行的时候遍历执行它们。
+调用`resolve`或`reject`除了状态变化，我们还会继续执行调用`then`里面定义的回调函数，并将结果或失败原因传递给该回调函数。
 
-这里另外给` handler(resolve, reject)`执行进行了错误处理，当其直接报错的时候我们将`Promise`直接`reject`掉。
+下面我们定义两个数组来挂载回调函数，并在执行的时候遍历执行它们。
+
+这里另外对` handler(resolve, reject)`进行了错误处理，当其直接报错的时候我们将`Promise`直接`reject`掉。
 ```js
 function CorePromise(handler) {
     // 三种状态pending, rejected, fulfilled
@@ -112,7 +124,12 @@ function CorePromise(handler) {
 
 ### then实现
 
-`then`的主要目标是挂载函数，当`Promise`状态变化的时候，能够执行这些函数，并且由于支持链式调用，所以then本身也返回一个`Promise`。`then`接受两个参数，第一个来处理`Promise`成功后的结果，第二个用来处理`Promise`失败后的结果，实现上当这两个函数不存在的时候我们赋予其默认值，直接将结果向下传递。
+`then`的主要目标是挂载回调函数，当`Promise`状态变化的时候，能够执行这些函数。
+
+同时由于`then`支持链式调用，所以`then`本身也需要返回一个新的`Promise`。
+
+`then`接受两个参数，第一个来处理`Promise`成功后的结果，第二个用来处理`Promise`失败后的结果，实现上当这两个函数不存在的时候我们赋予其默认值，直接将结果或错误向后传递。
+
 ```js
 CorePromise.prototype.then = function(resolveCb, rejectCb) {
     let promise = null;
@@ -126,13 +143,15 @@ CorePromise.prototype.then = function(resolveCb, rejectCb) {
     return promise
 }
 ```
-现在到了最重要的部分，实现`then`逻辑。
+现在到了最重要的部分，实现`then`逻辑。这里有两点
 - 如果`Promise`已经是终态了，则直接进行将`then`返回的`Promse`也转变为终态。
 - 如果当前`Promise`还处在`pending`状态，那么我们就将处理函数保存在`Promise`的回调数组中，以供进入终态后调用。
+
 重要：这里涉及到两个`Promise`实例注意区分，分别是当前`Promise`和`then`中返回的新`Promise`，返回的新`Promise`在`Promise`状态变化后也进行变化
-基本到这里我们核心就实现完毕了，考虑各种情况我们需要处理下
-1. then的回调函数结果又是一个`Promise`实例（这与之前的提到的两种`Promise`都不同，属于第三个，这里稍微有点绕，需要好好思考清楚）
-2. then的回调函数结果的`Promise`与当前then返回的`Promise`实例是同一个会造成循环调用，需要抛出错误
+
+基本到这里我们核心就实现完毕了，但考虑各种情况我们还需要额外处理下特殊情况
+- then的回调函数结果又是一个`Promise`实例（这与之前的提到的两种`Promise`都不同，属于第三个，这里稍微有点绕，需要好好思考清楚）
+- then的回调函数结果的`Promise`与当前then返回的`Promise`实例是同一个会造成循环调用，需要抛出错误
 
 ```js
 CorePromise.prototype.then = function (onFulfilled, onRejected) {CorePromise.prototype.then = function (onFulfilled, onRejected) {
@@ -248,4 +267,4 @@ CorePromise.race = (promises) => {
 }
 ```
 
-## 结尾
+## 总结

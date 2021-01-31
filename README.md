@@ -1,8 +1,13 @@
 # core-rewrite
-优秀前端相关库的核心简洁实现
+该系列为代码核心实现，主要用来对前端常用库或者函数进行核心原理的实现。
+重写代码可以帮助我们更好的理解，当我们用起来的时候不是一知半解，而是能够真正的得心应手，真正告别搜索编码。同时在面试的时候对于相关的问题我们也能够更加得心应手
 
-## 实现计划
-- promise-core
+下面是将要书写的计划，我将会按照这个顺序，一个个来实现，如果你有更好的思路或者意见等等，欢迎在issue区进行讨论。
+或者你有想看的更多东西的重写，也欢迎在讨论区提出来
+该系列会同时更新在公众号、掘金和知乎中，欢迎关注。
+
+## 计划列表
+- [promise-core](https://github.com/xwchris/core-rewrite/blob/main/packages/promise-core/promise-core.md)
 - ejs-core
 - webpack-core
 - markdown-parser-core
