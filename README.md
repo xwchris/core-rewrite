@@ -27,7 +27,7 @@
 ## 个人主页
 ### 公众号
 除了前端技术交流，还专注杭州大厂内推，扫一扫关注吧！
-
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/13d0e7096db942269865efabccf254a3~tplv-k3u1fbpfcp-watermark.image)
 ### 掘金
 https://juejin.cn/user/2225067263810631
 ### 知乎
