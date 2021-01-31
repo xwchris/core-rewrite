@@ -11,8 +11,10 @@
 
 该系列会同时更新在公众号、掘金和知乎中，欢迎关注。
 
-## 计划列表
+## 已完成列表
 - [promise-core](https://github.com/xwchris/core-rewrite/blob/main/packages/promise-core/promise-core.md)
+
+## 计划列表
 - ejs-core
 - webpack-core
 - markdown-parser-core
