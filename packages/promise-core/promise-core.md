@@ -224,9 +224,9 @@ CorePromise.reject = (error) => {
 }
 ```
 #### Promise.all
-`Promise.all`实现起来也不难，又两点需要注意
-1. 当一个`Promise`进入`reject`，则整个结果`Promise`进入`reject`状态
-2. 当所有`Promise`完成返回结果的时候，注意结果数组的返回顺序，这就是代码里没有直接把结果`push`进数组而是使用`result[i] = res`这种方式并配合`total`计数来实现
+`Promise.all`实现起来也不难，有两点需要注意
+1. 当一个`Promise`进入`reject`状态，则整个结果`Promise`进入`reject`状态
+2. 当所有`Promise`完成返回结果的时候，注意结果数组的返回顺序，这就是代码里没有直接把结果`push`进数组而是使用`result[i] = res`这种方式并配合`total`计数来实现的原因
 ```js
 CorePromise.all = (promises) => {
     const result = []
@@ -266,5 +266,3 @@ CorePromise.race = (promises) => {
     })
 }
 ```
-
-## 总结
