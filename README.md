@@ -23,6 +23,7 @@
 - react-core
 - react-router-core
 - redux-core
+- micro-front-end-core
 
 ## 个人主页
 ### 公众号
